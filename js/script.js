@@ -9,6 +9,7 @@ const generateGenres = function (films) {
   const uniqueGenres = [];
 
   films.forEach((film) => {
+    // let uniqueGenres = film.genres((genre) => !uniqueGenres.includes(genre));
     film.genres.forEach((genre) => {
       if (!uniqueGenres.includes(genre)) {
         uniqueGenres.push(genre);
@@ -71,17 +72,8 @@ elForm.addEventListener("submit", function (evt) {
   evt.preventDefault();
 
   let selectValue = elSelect.value;
-  let genreArray = [];
 
-  films.forEach((film) => {
-    if (film.genres.includes(selectValue)) {
-      genreArray.push(film);
-    }
-  });
-
-  console.log(typeof selectValue);
-
-  console.log(selectValue);
+  let genreArray = films.filter((film) => film.genres.includes(selectValue));
 
   if (selectValue === "all") {
     elList.innerHTML = null;
