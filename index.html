@@ -20,28 +20,87 @@
       </div>
     </header>
 
-    <main class="site-main">
-      <section class="movies">
+    <main class="site-main d-flex justify-content-between mx-5">
+      <section class="search w-50">
         <div class="container">
-          <p class="text-white bg-info d-inline-block p-2 rounded">
+          <div>
+            <form class="form mb-3">
+              <div class="input-group mb-3">
+                <input type="text" class="form-control" placeholder="Search" />
+              </div>
+
+              <div class="input-group mb-3">
+                <input type="number" class="form-control" placeholder="5" />
+              </div>
+
+              <select
+                class="select h-100 form-select mb-3"
+                name="films"
+                id="film"
+              >
+                <option selected value="all">All</option>
+              </select>
+
+              <select
+                class="h-100 form-select mb-3"
+                name="films"
+                id="film-part"
+              >
+                <option selected>Rating (high to low)</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+              </select>
+
+              <button class="btn-primary btn w-100">search</button>
+            </form>
+
+            <div>
+              <ul class="bookmark-list"></ul>
+            </div>
+          </div>
+        </div>
+      </section>
+      <section class="movies w-auto">
+        <div class="container">
+          <p
+            class="search__result d-inline-block p-2 rounded mb-1 mx-5 fs-4 fw-bolder text-secondary"
+          >
             Search Results: <span class="movies__result">0</span>
           </p>
+          <div class="alert alert-info mx-5" role="alert">
+            Use the form on the to search for a movie
+          </div>
 
-          <form
-            class="form mb-3 d-flex align-items-center justify-content-start"
-          >
-            <select class="select h-100 mx-3" name="films" id="film">
-              <option value="all">All</option>
-            </select>
-            <button class="btn-primary btn">search</button>
-          </form>
-
-          <ul class="movies__list"></ul>
+          <ul
+            class="movies__list d-flex align-items-center justify-content-evenly"
+          ></ul>
         </div>
       </section>
     </main>
 
-    <footer></footer>
+    <!-- <button class="show-modal">Show modal</button> -->
+
+    <div class="modall hidden">
+      <button class="close-modal">&times;</button>
+      <h1 class="modal__title">I'm a modal window 😍</h1>
+      <!-- <iframe
+        src="https://image.tmdb.org/t/p/w500/xnopI5Xtky18MPhK40cZAGAOVeV.jpg"
+        frameborder="0"
+      ></iframe> -->
+      <p class="modal__desc">
+        Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+        tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim
+        veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
+        commodo consequat. Duis aute irure dolor in reprehenderit in voluptate
+        velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint
+        occaecat cupidatat non proident, sunt in culpa qui officia deserunt
+        mollit anim id est laborum.
+      </p>
+    </div>
+    <div class="overlay hidden"></div>
 
     <script
       src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"

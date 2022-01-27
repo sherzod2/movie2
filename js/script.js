@@ -1,15 +1,85 @@
 let elResult = document.querySelector(".movies__result");
 let elList = document.querySelector(".movies__list");
+let elBookmarkList = document.querySelector(".bookmark-list");
 let elSelect = document.querySelector(".select");
 let elForm = document.querySelector(".form");
+let elModalTitle = document.querySelector(".modal__title");
+let elModalDesc = document.querySelector(".modal__desc");
+let elModal = document.querySelector(".modall");
+let elCloseBtn = document.querySelector(".close-modal");
+let elOverlay = document.querySelector(".overlay");
 
 elResult.textContent = films.length;
+
+let bookmarkLocalStorage = JSON.parse(window.localStorage.getItem("bookmarks"));
+let bookmarks = bookmarkLocalStorage || [];
+
+elList.addEventListener("click", (evt) => {
+  if (evt.target.matches(".bookmark-btn")) {
+    let bookmarkBtnId = evt.target.dataset.bookmarkId * 1;
+
+    let foundBookmarkFilm = films.find((film) => {
+      return film.newId === bookmarkBtnId;
+    });
+
+    if (!bookmarks.includes(foundBookmarkFilm)) {
+      bookmarks.push(foundBookmarkFilm);
+    }
+
+    elBookmarkList.innerHTML = null;
+    renderBookmarks(bookmarks, elBookmarkList);
+  } else if (evt.target.matches(".more-info-btn")) {
+    let moreInfoBtnId = evt.target.dataset.moreInfoId * 1;
+
+    let foundMoreInfoFilm = films.find((film) => film.newId === moreInfoBtnId);
+
+    elModalTitle.textContent = foundMoreInfoFilm.title;
+    elModalDesc.textContent = foundMoreInfoFilm.overview;
+
+    // console.log(foundMoreInfoFilm.title);
+
+    elModal.classList.remove("hidden");
+    elOverlay.classList.remove("hidden");
+
+    elCloseBtn.addEventListener("click", function () {
+      elModal.classList.add("hidden");
+      elOverlay.classList.add("hidden");
+    });
+
+    elOverlay.addEventListener("click", function () {
+      elModal.classList.add("hidden");
+      elOverlay.classList.add("hidden");
+    });
+
+    document.addEventListener("keydown", function (evt) {
+      if (evt.key === "Escape") {
+        elModal.classList.add("hidden");
+        elOverlay.classList.add("hidden");
+      }
+    });
+  }
+});
+
+elBookmarkList.addEventListener("click", (evt) => {
+  if (evt.target.matches(".bookmark__item")) {
+    let bookmarkRemoveBtnId = evt.target.dataset.removeId * 1;
+
+    let foundBookmarkItemIndex = bookmarks.findIndex(
+      (bookmark) => bookmark.id == bookmarkRemoveBtnId
+    );
+
+    bookmarks.splice(foundBookmarkItemIndex, 1);
+
+    elBookmarkList.innerHTML = null;
+    window.localStorage.setItem("bookmarks", JSON.stringify(bookmarks));
+    renderBookmarks(bookmarks, elBookmarkList);
+  }
+});
 
 const generateGenres = function (films) {
   const uniqueGenres = [];
 
   films.forEach((film) => {
-    // let uniqueGenres = film.genres((genre) => !uniqueGenres.includes(genre));
     film.genres.forEach((genre) => {
       if (!uniqueGenres.includes(genre)) {
         uniqueGenres.push(genre);
@@ -26,7 +96,34 @@ const generateGenres = function (films) {
   });
 };
 
+const renderBookmarks = function (bookmarks, node) {
+  let bookmarkBtnId = 0;
+  for (let bookmark of bookmarks) {
+    let newLi = document.createElement("li");
+    let newLiTitle = document.createElement("h3");
+    let newLiRemoveBtn = document.createElement("button");
+
+    newLiRemoveBtn.setAttribute(
+      "class",
+      "bookmark__item btn btn-outline-danger"
+    );
+
+    newLiTitle.textContent = bookmark.title;
+    newLiRemoveBtn.textContent = "Remove";
+
+    bookmark.id = bookmarkBtnId;
+    // console.log(bookmark.id);
+    newLiRemoveBtn.dataset.removeId = bookmarkBtnId++;
+
+    node.appendChild(newLi);
+    newLi.appendChild(newLiTitle);
+    newLi.appendChild(newLiRemoveBtn);
+  }
+  window.localStorage.setItem("bookmarks", JSON.stringify(bookmarks));
+};
+
 const renderFilms = function (filmsArray, element) {
+  let bookmarkBtnId = 0;
   filmsArray.forEach((movie) => {
     //CREATE
     let newItem = document.createElement("li");
@@ -35,6 +132,10 @@ const renderFilms = function (filmsArray, element) {
     let newCardBody = document.createElement("div");
     let newCardTitle = document.createElement("h5");
     let newCardGenresList = document.createElement("ul");
+    let newCradBtnsWrapper = document.createElement("div");
+    let newCardWatchTrailerBtn = document.createElement("button");
+    let newCardMoreInfoBtn = document.createElement("button");
+    let newCardBookmarkBtn = document.createElement("button");
 
     movie.genres.forEach((genre) => {
       let newCardGenres = document.createElement("li");
@@ -50,9 +151,30 @@ const renderFilms = function (filmsArray, element) {
     newImg.setAttribute("class", "card-img-top");
     newImg.setAttribute("src", movie.poster);
     newCardBody.setAttribute("class", "card-body");
+    newCradBtnsWrapper.setAttribute(
+      "class",
+      "mt-auto d-flex align-items-center justify-content-center flex-wrap"
+    );
+    newCardWatchTrailerBtn.setAttribute("class", "btn btn-outline-primary m-2");
+    newCardMoreInfoBtn.setAttribute(
+      "class",
+      "more-info-btn btn btn-outline-primary m-2"
+    );
+    newCardBookmarkBtn.setAttribute(
+      "class",
+      "bookmark-btn btn btn-outline-primary"
+    );
+
+    // DATA SET
+    newCardBookmarkBtn.dataset.bookmarkId = bookmarkBtnId;
+    movie.newId = bookmarkBtnId;
+    newCardMoreInfoBtn.dataset.moreInfoId = bookmarkBtnId++;
 
     //TEXT CONTENT
     newCardTitle.textContent = movie.title;
+    newCardWatchTrailerBtn.textContent = "Watch trailer";
+    newCardMoreInfoBtn.textContent = "More info";
+    newCardBookmarkBtn.textContent = "Bookmark";
 
     //APPEND CHILD
     element.appendChild(newItem);
@@ -61,12 +183,12 @@ const renderFilms = function (filmsArray, element) {
     newCard.appendChild(newCardBody);
     newCardBody.appendChild(newCardTitle);
     newCardBody.appendChild(newCardGenresList);
+    newCardBody.appendChild(newCradBtnsWrapper);
+    newCradBtnsWrapper.appendChild(newCardWatchTrailerBtn);
+    newCradBtnsWrapper.appendChild(newCardMoreInfoBtn);
+    newCradBtnsWrapper.appendChild(newCardBookmarkBtn);
   });
 };
-
-generateGenres(films);
-
-renderFilms(films, elList);
 
 elForm.addEventListener("submit", function (evt) {
   evt.preventDefault();
@@ -85,3 +207,9 @@ elForm.addEventListener("submit", function (evt) {
     elResult.textContent = genreArray.length;
   }
 });
+
+renderBookmarks(bookmarks, elBookmarkList);
+
+generateGenres(films);
+
+renderFilms(films, elList);
