@@ -1,3 +1,4 @@
+"use strict";
 let elResult = document.querySelector(".movies__result");
 let elList = document.querySelector(".movies__list");
 let elBookmarkList = document.querySelector(".bookmark-list");
@@ -13,13 +14,16 @@ elResult.textContent = films.length;
 
 let bookmarkLocalStorage = JSON.parse(window.localStorage.getItem("bookmarks"));
 let bookmarks = bookmarkLocalStorage || [];
+// console.log(bookmarks);
+
+// console.log(bookmarks);
 
 elList.addEventListener("click", (evt) => {
   if (evt.target.matches(".bookmark-btn")) {
-    let bookmarkBtnId = evt.target.dataset.bookmarkId * 1;
+    let bookmarkBtnId = evt.target.dataset.bookmarkId;
 
     let foundBookmarkFilm = films.find((film) => {
-      return film.newId === bookmarkBtnId;
+      return film.id === bookmarkBtnId;
     });
 
     if (!bookmarks.includes(foundBookmarkFilm)) {
@@ -29,9 +33,10 @@ elList.addEventListener("click", (evt) => {
     elBookmarkList.innerHTML = null;
     renderBookmarks(bookmarks, elBookmarkList);
   } else if (evt.target.matches(".more-info-btn")) {
-    let moreInfoBtnId = evt.target.dataset.moreInfoId * 1;
+    let moreInfoBtnId = evt.target.dataset.moreInfoId;
 
-    let foundMoreInfoFilm = films.find((film) => film.newId === moreInfoBtnId);
+    let foundMoreInfoFilm = films.find((film) => film.id === moreInfoBtnId);
+    console.log(moreInfoBtnId);
 
     elModalTitle.textContent = foundMoreInfoFilm.title;
     elModalDesc.textContent = foundMoreInfoFilm.overview;
@@ -97,7 +102,7 @@ const generateGenres = function (films) {
 };
 
 const renderBookmarks = function (bookmarks, node) {
-  let bookmarkBtnId = 0;
+  // let bookmarkBtnId = 0;
   for (let bookmark of bookmarks) {
     let newLi = document.createElement("li");
     let newLiTitle = document.createElement("h3");
@@ -111,9 +116,9 @@ const renderBookmarks = function (bookmarks, node) {
     newLiTitle.textContent = bookmark.title;
     newLiRemoveBtn.textContent = "Remove";
 
-    bookmark.id = bookmarkBtnId;
+    // bookmark.id = bookmarkBtnId;
     // console.log(bookmark.id);
-    newLiRemoveBtn.dataset.removeId = bookmarkBtnId++;
+    newLiRemoveBtn.dataset.removeId = bookmark.id;
 
     node.appendChild(newLi);
     newLi.appendChild(newLiTitle);
@@ -123,7 +128,7 @@ const renderBookmarks = function (bookmarks, node) {
 };
 
 const renderFilms = function (filmsArray, element) {
-  let bookmarkBtnId = 0;
+  // let bookmarkBtnId = 0;
   filmsArray.forEach((movie) => {
     //CREATE
     let newItem = document.createElement("li");
@@ -166,9 +171,9 @@ const renderFilms = function (filmsArray, element) {
     );
 
     // DATA SET
-    newCardBookmarkBtn.dataset.bookmarkId = bookmarkBtnId;
-    movie.newId = bookmarkBtnId;
-    newCardMoreInfoBtn.dataset.moreInfoId = bookmarkBtnId++;
+    newCardBookmarkBtn.dataset.bookmarkId = movie.id;
+    // movie.newId = bookmarkBtnId;
+    newCardMoreInfoBtn.dataset.moreInfoId = movie.id;
 
     //TEXT CONTENT
     newCardTitle.textContent = movie.title;
@@ -189,6 +194,8 @@ const renderFilms = function (filmsArray, element) {
     newCradBtnsWrapper.appendChild(newCardBookmarkBtn);
   });
 };
+
+renderFilms(films, elList);
 
 elForm.addEventListener("submit", function (evt) {
   evt.preventDefault();
@@ -211,5 +218,3 @@ elForm.addEventListener("submit", function (evt) {
 renderBookmarks(bookmarks, elBookmarkList);
 
 generateGenres(films);
-
-renderFilms(films, elList);
